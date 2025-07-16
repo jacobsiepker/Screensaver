@@ -35,7 +35,7 @@ const bool enableValidationLayers = true;
 #endif
 
 
-class HelloTriangleApplication {
+class VulkanScreensaverApplication {
 
 private:
     GLFWwindow* window;
@@ -60,6 +60,7 @@ private:
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
 
+    bool closeProgram = false;
     bool framebufferResized = false;
     uint32_t currentFrame = 0;
     std::chrono::steady_clock::time_point startTime;
@@ -101,12 +102,20 @@ private:
         window = glfwCreateWindow(WIDTH, HEIGHT, "Screensaver Demo", nullptr, nullptr);
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback); // set a callback for window resize events
+        glfwSetKeyCallback(window, keyCallback);
         //glfwSetWindowOpacity(window, 0.5); // window opacity example
     }
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-        auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+        auto app = reinterpret_cast<VulkanScreensaverApplication*>(glfwGetWindowUserPointer(window));
         app->framebufferResized = true;
+    }
+
+    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+        if (action == GLFW_PRESS) {
+            auto app = reinterpret_cast<VulkanScreensaverApplication*>(glfwGetWindowUserPointer(window));
+            app->closeProgram = true;
+        }
     }
 
     void initVulkan() {
@@ -933,6 +942,12 @@ private:
         }
     }
 
+    void getInput() {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            closeProgram = true;
+        }
+    }
+
     //////// Runtime
 
     void drawFrame() {
@@ -1000,9 +1015,10 @@ private:
     }
 
     void mainLoop() {
-        while (!glfwWindowShouldClose(window))
+        while (!closeProgram && !glfwWindowShouldClose(window))
         {
             glfwPollEvents();
+            getInput();
             drawFrame();
         }
         vkDeviceWaitIdle(device); // dont destroy anything until we are done with our current rendering commands. shouldn't be long.
@@ -1030,7 +1046,7 @@ private:
 };
 
 int WinMain() {
-    HelloTriangleApplication app;
+    VulkanScreensaverApplication app;
 
     try {
         app.run();
