@@ -14,8 +14,8 @@
 #include <fstream>
 #include <chrono>
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+const uint32_t WIDTH = 1920;
+const uint32_t HEIGHT = 1080;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -900,7 +900,7 @@ private:
         vkCmdPushConstants(_cmdBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(int), &timeElapsed);
 
         // Draw the triangle! (command created, not yet sent or received or queued or run)
-        vkCmdDraw(_cmdBuffer, 3, 1, 0, 0);
+        vkCmdDraw(_cmdBuffer, 4, 1, 0, 0);
 
         vkCmdEndRenderPass(_cmdBuffer);
 
