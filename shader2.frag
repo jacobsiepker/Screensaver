@@ -1,14 +1,19 @@
 #version 450
 
 
-//layout(push_constant) uniform PushConstants {
-//    int iTime;
-//} pc;
+layout(push_constant) uniform PushConstants {
+    int iTime;
+} pc;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 0) out vec4 outColor;
 
 void main() {
+
+    // speed factor
+    float speed = 0.0005;
+
+
     vec2 C = gl_FragCoord.xy;
 
     float i = 0.0;
@@ -23,10 +28,10 @@ void main() {
 
     for (; ++i < 77.0; z += 0.6 * d) {
         // Convert 2D pixel to 3D ray direction
-        p = vec4(z * normalize(vec3(C - 0.5 * r, r.y)), 0.1 /** pc.iTime*/);
+        p = vec4(z * normalize(vec3(C - 0.5 * r, r.y)), 0.1 * pc.iTime * speed);
 
         // Move through 3D space over time
-        //p.z += pc.iTime;
+        p.z += pc.iTime * speed;
 
         // Save position for lighting calculations
         O = p;

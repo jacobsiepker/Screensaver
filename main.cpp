@@ -12,7 +12,7 @@
 #include <limits>
 #include <algorithm>
 #include <fstream>
-#include <ctime>
+#include <chrono>
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -62,6 +62,7 @@ private:
 
     bool framebufferResized = false;
     uint32_t currentFrame = 0;
+    std::chrono::steady_clock::time_point startTime;
 
     // This is where we store all of the queue families that we will want to get from the device
     struct QueueFamilyIndices {
@@ -81,6 +82,8 @@ private:
 
 public:
     void run() {
+        startTime = std::chrono::steady_clock::now();
+
         initWindow();
         initVulkan();
         mainLoop();
@@ -591,7 +594,7 @@ private:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("vert.spv");
+        auto vertShaderCode = readFile("vert2.spv");
         auto fragShaderCode = readFile("frag2.spv");
 
         std::cout << "Vert Shader Size : " << vertShaderCode.size() << '\n';
@@ -626,7 +629,7 @@ private:
         // How does this pipeline read verticies?
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
         inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;//VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         inputAssembly.primitiveRestartEnable = VK_FALSE;
 
         // Set viewport details for the pipeline
@@ -893,11 +896,8 @@ private:
         vkCmdSetScissor(_cmdBuffer, 0, 1, &scissor);
         
         // Set the time as a push constant
-        time_t currentTime;
-        time(&currentTime); // I must look like some kind of joker having to fetch the time this way.
-        int cTimeInt = (int)(currentTime);
-
-        vkCmdPushConstants(_cmdBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(int), &cTimeInt);
+        int timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime).count();
+        vkCmdPushConstants(_cmdBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(int), &timeElapsed);
 
         // Draw the triangle! (command created, not yet sent or received or queued or run)
         vkCmdDraw(_cmdBuffer, 3, 1, 0, 0);
