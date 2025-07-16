@@ -1029,7 +1029,7 @@ private:
     }
 };
 
-int main() {
+int WinMain() {
     HelloTriangleApplication app;
 
     try {

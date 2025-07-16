@@ -41,5 +41,8 @@
     <None Include="shader2.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shader2.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
