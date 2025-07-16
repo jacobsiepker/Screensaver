@@ -142,6 +142,7 @@
     <None Include="frag.spv" />
     <None Include="shader.frag" />
     <None Include="shader.vert" />
+    <None Include="shader2.frag" />
     <None Include="vert.spv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

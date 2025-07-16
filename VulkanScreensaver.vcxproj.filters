@@ -38,5 +38,8 @@
     <None Include="vert.spv">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shader2.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

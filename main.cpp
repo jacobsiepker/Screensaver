@@ -12,6 +12,7 @@
 #include <limits>
 #include <algorithm>
 #include <fstream>
+#include <ctime>
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -591,7 +592,7 @@ private:
 
     void createGraphicsPipeline() {
         auto vertShaderCode = readFile("vert.spv");
-        auto fragShaderCode = readFile("frag.spv");
+        auto fragShaderCode = readFile("frag2.spv");
 
         std::cout << "Vert Shader Size : " << vertShaderCode.size() << '\n';
         std::cout << "Frag Shader Size : " << fragShaderCode.size() << '\n';
@@ -890,6 +891,13 @@ private:
         scissor.offset = { 0,0 };
         scissor.extent = swapChainExtent;
         vkCmdSetScissor(_cmdBuffer, 0, 1, &scissor);
+        
+        // Set the time as a push constant
+        time_t currentTime;
+        time(&currentTime); // I must look like some kind of joker having to fetch the time this way.
+        int cTimeInt = (int)(currentTime);
+
+        vkCmdPushConstants(_cmdBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(int), &cTimeInt);
 
         // Draw the triangle! (command created, not yet sent or received or queued or run)
         vkCmdDraw(_cmdBuffer, 3, 1, 0, 0);
